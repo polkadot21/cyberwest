@@ -1,4 +1,4 @@
-# cyberwest
+# cybervest
 
 The folder contains of 5 task files in .py, 4 .sh scripts and other files, such as jupyter notebooks I used to design the extrema() function and the model.
 
@@ -8,6 +8,6 @@ The folder contains of 5 task files in .py, 4 .sh scripts and other files, such 
 
 3. task_3.sh creastes a pytorch dataset. Returns the destribution of the train, test and val sets. Moreover, it plots these destributions. 
 
-4. task_4.a/task_4.b - These are two files with a) only weights and b) with the whole architecture of the model
+4. there is a file 'classifier.pt' in my google cloud.
 
 5. task_5.sh - creates a random sample and plots y_pred and y_random using plotly. 
