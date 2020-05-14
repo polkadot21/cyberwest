@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 
 
 #make a random array, x[0] = 1, x[i] = x[i-1] + random.uniform(-1, 1)
-def random_array(M=3000):
+def random_array(M=1000):
     #random.seed(42)
     N=1024
     x = range(N)
@@ -25,14 +25,14 @@ def random_array(M=3000):
 #with T*std so that there are approx. 10 extrema in N=1024
 #returns Ymax, Ymin, number of extrema per N and Y (all extrema)
 
-def extrema(arr, M=3000):
+def extrema(arr):
     #arr = random_array(M)
     #flag variable
     found_min = False
     found = False
     #1/4 of std 
     x = 3
-    T = 0.015
+    T = 0.014
     Y_last = 0
     #distance between extrema >3
     dist = x+1
@@ -49,10 +49,11 @@ def extrema(arr, M=3000):
                     #whether or not the difference between the last extremum and a new one is more than T.std
                     if np.abs(arr[i] - Y_last) >= D:
                         dist = 1
-                        Ymax[i] = 1
+                        Ymax[i] = arr[i]
                         found = True
                         found_min = False
                         Y_last = arr[i]
+                        
 
 
                     else:
@@ -62,25 +63,28 @@ def extrema(arr, M=3000):
                 if arr[i] < arr[i-1] and arr[i] < arr[i+1]:
                     if np.abs(arr[i] - Y_last) >= D:
                         dist = 1
-                        Ymin[i] = 2
+                        Ymin[i] = arr[i]
                         found = True
                         found_min = True
                         Y_last = arr[i]
+                        
                     else:
                         i+=1
         else:
             dist+=1
     #Y = the number of extrema in N=1024       
-    Y = (Ymax+Ymin/2)/3000
-    return Ymax, Ymin, Y
+    #Y = (Ymax - Ymin)/1000
+    return Ymax, Ymin, #Y
     
 x = random_array()
-ymax, ymin, y= extrema(x, 3000)
+ymax, ymin = extrema(x)
 
 print('len of x:' ,len(x))
-print('num of max:', np.sum(ymax))
-print('num of min:' , np.sum(ymin)/2)
-print('num of extrema per N=1024:', np.sum(y))
+#print('num of max:', np.sum(ymax))
+#print('num of min:' , np.sum(-ymin))
+#print('num of extrema per N=1024:', np.sum(y))
+
+
 
 
 
@@ -100,9 +104,16 @@ def plot_random_sample(arr, n=1024):
     #create a random sample
     arr_sample = create_random_sample(arr)
     #create Ymax and Ymin for random_sample
-    Ymax_sample, Ymin_sample, Y_mean = extrema(arr_sample)
+    Ymax_sample, Ymin_sample = extrema(arr_sample)
     #x-line for lenght = n
     t = np.linspace(0, n)
+    
+    for i in range(1, len(Ymax_sample)):
+        if Ymax_sample[i] == 0:
+            Ymax_sample[i] = np.nan
+    for j in range(1, len(Ymin_sample)):
+        if Ymin_sample[j] == 0:
+            Ymin_sample[j] = np.nan
 
     y1 = Ymax_sample
     y2 = arr_sample
@@ -110,15 +121,16 @@ def plot_random_sample(arr, n=1024):
     fig = go.Figure()
 
     # Add traces
-    fig.add_trace(go.Scatter(x=t, y=y1,
-                    mode='markers',
-                    name='Ymax',
-                    marker_color='rgb(253, 68, 43)'))
-                  
+   
     fig.add_trace(go.Scatter(x=t, y=y2,
                     mode='lines+markers',
                     name='array_sample',
                     marker_color='rgb(154, 221, 43)'))
+    
+    fig.add_trace(go.Scatter(x=t, y=y1,
+                    mode='markers',
+                    name='Ymax',
+                    marker_color='rgb(253, 68, 43)'))
                   
     fig.add_trace(go.Scatter(x=t, y=y3,
                         mode='markers',
@@ -127,7 +139,6 @@ def plot_random_sample(arr, n=1024):
 
 
     fig.show()
-    
     
     
 plot_random_sample(x)
